@@ -1,25 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/providers/participant_provider.dart';
-import 'package:race_tracking_app_g5/repository/participant_repository.dart';
+import 'package:race_tracking_app_g5/repository/firebase_participant_repository.dart';
+import 'package:race_tracking_app_g5/repository/firebase_service.dart';
 import 'package:race_tracking_app_g5/screens/participant/participant_screen.dart';
 import 'package:race_tracking_app_g5/screens/race/race_screen.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  final firebaseService = FirebaseService(
+    baseUrl:
+        'https://vong-690e4-default-rtdb.asia-southeast1.firebasedatabase.app/',
+    httpClient: http.Client(),
+  );
+
+  final participantRepository = FirebaseParticipantRepository(
+    firebaseService: firebaseService,
+  );
+
+  runApp(MyApp(participantRepository: participantRepository));
+}
 
 class MyApp extends StatelessWidget {
-  final participantRepo = FirebaseParticipantRepository();
-  // final raceRepo = FirebaseRaceRepository();
+  final FirebaseParticipantRepository participantRepository;
 
-  MyApp({super.key});
+  const MyApp({super.key, required this.participantRepository});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => ParticipantProvider(participantRepo),
+          create: (context) => ParticipantProvider(participantRepository),
         ),
         // ChangeNotifierProvider(
         //   create: (context) => RaceProvider(raceRepo),
