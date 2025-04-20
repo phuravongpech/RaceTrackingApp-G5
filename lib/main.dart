@@ -1,15 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:race_tracking_app_g5/providers/participant_provider.dart';
+import 'package:race_tracking_app_g5/repository/participant_repository.dart';
+import 'package:race_tracking_app_g5/screens/participant/participant_screen.dart';
+import 'package:race_tracking_app_g5/screens/race/race_screen.dart';
+import 'package:race_tracking_app_g5/theme/theme.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final participantRepo = FirebaseParticipantRepository();
+  // final raceRepo = FirebaseRaceRepository();
 
-  // This widget is the root of your application.
+  MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Text('Hello Race Tracking App'));
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ParticipantProvider(participantRepo),
+        ),
+        // ChangeNotifierProvider(
+        //   create: (context) => RaceProvider(raceRepo),
+        // ),
+      ],
+      child: MaterialApp(
+        home: HomeScreen(),
+        debugShowCheckedModeBanner: false,
+        theme: appTheme,
+      ),
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = [const RaceScreen(), const ParticipantScreen()];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Participant',
+          ),
+        ],
+      ),
+    );
   }
 }
