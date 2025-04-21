@@ -1,38 +1,58 @@
-import 'dart:convert';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:logger/logger.dart';
 import 'package:race_tracking_app_g5/dto/participant_dto.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
-import 'package:race_tracking_app_g5/repository/firebase_service.dart';
 import 'package:race_tracking_app_g5/repository/participant_repository.dart';
 
-class FirebaseParticipantRepository implements ParticipantRepository {
-  final FirebaseService firebaseService;
-  final String endpoint = 'participant';
+class RealtimeParticipantRepository implements ParticipantRepository {
+  final DatabaseReference _database = FirebaseDatabase.instance.ref(
+    'participant',
+  );
   final Logger logger = Logger();
 
-  FirebaseParticipantRepository({required this.firebaseService});
+  @override
+  Stream<List<Participant>> getParticipantsStream() {
+    return _database.onValue.map((event) {
+      final Map<dynamic, dynamic>? data = event.snapshot.value as Map?;
+      if (data == null) return [];
+
+      final List<Participant> participants = [];
+      data.forEach((key, value) {
+        final Map<String, dynamic> participantData = Map<String, dynamic>.from(
+          value,
+        );
+        final dto = ParticipantDto.fromJson({'id': key, ...participantData});
+        participants.add(dto.toModel());
+      });
+
+      return participants;
+    });
+  }
 
   @override
   Future<List<Participant>> getAllParticipants() async {
     try {
-      final response = await firebaseService.get(endpoint);
+      final snapshot = await _database.get();
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic>? data = json.decode(response.body);
-        if (data == null) return [];
-
-        final List<Participant> participants = [];
-        data.forEach((key, value) {
-          final dto = ParticipantDto.fromJson({'id': key, ...value});
-          participants.add(dto.toModel());
-        });
-
-        return participants;
-      } else {
-        throw Exception('Failed to load participants: ${response.statusCode}');
+      if (!snapshot.exists || snapshot.value == null) {
+        return [];
       }
+
+      final Map<dynamic, dynamic> data =
+          snapshot.value as Map<dynamic, dynamic>;
+      final List<Participant> participants = [];
+
+      data.forEach((key, value) {
+        final Map<String, dynamic> participantData = Map<String, dynamic>.from(
+          value,
+        );
+        final dto = ParticipantDto.fromJson({'id': key, ...participantData});
+        participants.add(dto.toModel());
+      });
+
+      return participants;
     } catch (e) {
-      logger.e("Error loading participants: $e");
+      logger.e("Error fetching participants: $e");
       throw Exception('Failed to load participants: $e');
     }
   }
@@ -41,16 +61,10 @@ class FirebaseParticipantRepository implements ParticipantRepository {
   Future<Participant> addParticipant(String name, int bibNumber) async {
     try {
       final dto = ParticipantDto(name: name, bibNumber: bibNumber);
-      final response = await firebaseService.post(endpoint, dto.toJson());
+      final newRef = _database.push();
+      await newRef.set(dto.toJson());
 
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        final generatedId = responseData['name'];
-
-        return Participant(id: generatedId, name: name, bibNumber: bibNumber);
-      } else {
-        throw Exception('Failed to add participant: ${response.statusCode}');
-      }
+      return Participant(id: newRef.key!, name: name, bibNumber: bibNumber);
     } catch (e) {
       logger.e("Error adding participant: $e");
       throw Exception('Failed to add participant: $e');
@@ -60,11 +74,7 @@ class FirebaseParticipantRepository implements ParticipantRepository {
   @override
   Future<void> deleteParticipant(String id) async {
     try {
-      final response = await firebaseService.delete(endpoint, id);
-
-      if (response.statusCode != 200) {
-        throw Exception('Failed to delete participant: ${response.statusCode}');
-      }
+      await _database.child(id).remove();
     } catch (e) {
       logger.e("Error deleting participant: $e");
       throw Exception('Failed to delete participant: $e');
@@ -74,20 +84,19 @@ class FirebaseParticipantRepository implements ParticipantRepository {
   @override
   Future<Participant> getParticipantById(String id) async {
     try {
-      final response = await firebaseService.get(endpoint, id: id);
+      final snapshot = await _database.child(id).get();
 
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        // Check if the participant exists
-        if (responseData == null) {
-          throw Exception('Participant not found with ID: $id');
-        }
-
-        final dto = ParticipantDto.fromJson({'id': id, ...responseData});
-        return dto.toModel();
-      } else {
-        throw Exception('Failed to get participant: ${response.statusCode}');
+      if (!snapshot.exists || snapshot.value == null) {
+        throw Exception('Participant not found with ID: $id');
       }
+
+      final data = snapshot.value as Map<dynamic, dynamic>;
+      final dto = ParticipantDto.fromJson({
+        'id': id,
+        ...Map<String, dynamic>.from(data),
+      });
+
+      return dto.toModel();
     } catch (e) {
       logger.e("Error getting participant: $e");
       throw Exception('Failed to get participant: $e');
@@ -97,12 +106,8 @@ class FirebaseParticipantRepository implements ParticipantRepository {
   @override
   Future<void> updateParticipant(String name, int bibNumber, String id) async {
     try {
-      final dto = ParticipantDto(id: id, name: name, bibNumber: bibNumber);
-      final response = await firebaseService.put(endpoint, id, dto.toJson());
-
-      if (response.statusCode != 200) {
-        throw Exception('Failed to update participant: ${response.statusCode}');
-      }
+      final dto = ParticipantDto(name: name, bibNumber: bibNumber);
+      await _database.child(id).update(dto.toJson());
     } catch (e) {
       logger.e("Error updating participant: $e");
       throw Exception('Failed to update participant: $e');

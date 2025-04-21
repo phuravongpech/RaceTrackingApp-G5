@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
@@ -7,6 +8,7 @@ import 'package:race_tracking_app_g5/utils/async_value.dart';
 class ParticipantProvider extends ChangeNotifier {
   final ParticipantRepository _repository;
   AsyncValue<List<Participant>>? participantState;
+  StreamSubscription<List<Participant>>? _participantsSubscription;
 
   bool get isLoading => participantState?.state == AsyncValueState.loading;
   bool get hasData =>
@@ -24,6 +26,12 @@ class ParticipantProvider extends ChangeNotifier {
     return list.any(
       (p) => p.id != id && (p.name == name || p.bibNumber == bibNumber),
     );
+  }
+
+  @override
+  void dispose() {
+    _participantsSubscription?.cancel();
+    super.dispose();
   }
 
   ParticipantProvider(this._repository) {

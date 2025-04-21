@@ -1,29 +1,24 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:race_tracking_app_g5/firebase_options.dart';
 import 'package:race_tracking_app_g5/providers/participant_provider.dart';
 import 'package:race_tracking_app_g5/repository/firebase_participant_repository.dart';
-import 'package:race_tracking_app_g5/repository/firebase_service.dart';
+import 'package:race_tracking_app_g5/repository/participant_repository.dart';
 import 'package:race_tracking_app_g5/screens/participant/participant_screen.dart';
 import 'package:race_tracking_app_g5/screens/race/race_screen.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
 
-void main() {
-  final firebaseService = FirebaseService(
-    baseUrl:
-        'https://vong-690e4-default-rtdb.asia-southeast1.firebasedatabase.app/',
-    httpClient: http.Client(),
-  );
-
-  final participantRepository = FirebaseParticipantRepository(
-    firebaseService: firebaseService,
-  );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final participantRepository = RealtimeParticipantRepository();
 
   runApp(MyApp(participantRepository: participantRepository));
 }
 
 class MyApp extends StatelessWidget {
-  final FirebaseParticipantRepository participantRepository;
+  final ParticipantRepository participantRepository;
 
   const MyApp({super.key, required this.participantRepository});
 

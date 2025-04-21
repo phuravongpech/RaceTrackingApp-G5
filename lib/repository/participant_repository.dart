@@ -6,4 +6,5 @@ abstract class ParticipantRepository {
   Future<Participant> addParticipant(String name, int bibNumber);
   Future<void> updateParticipant(String name, int bibNumber, String id);
   Future<void> deleteParticipant(String id);
+  Stream<List<Participant>> getParticipantsStream();
 }

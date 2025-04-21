@@ -22,12 +22,4 @@ class ParticipantDto {
   Participant toModel() {
     return Participant(id: id ?? '', name: name, bibNumber: bibNumber);
   }
-
-  static ParticipantDto fromModel(Participant participant) {
-    return ParticipantDto(
-      id: participant.id,
-      name: participant.name,
-      bibNumber: participant.bibNumber,
-    );
-  }
 }
