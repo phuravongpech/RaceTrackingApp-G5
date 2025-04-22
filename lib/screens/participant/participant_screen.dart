@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/providers/participant_provider.dart';
+import 'package:race_tracking_app_g5/screens/participant/widgets/delete_confirmation_dialog.dart';
 import 'package:race_tracking_app_g5/screens/participant/widgets/participant_card.dart';
+import 'package:race_tracking_app_g5/screens/participant/widgets/participant_dialogs.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
 
 class ParticipantScreen extends StatelessWidget {
@@ -28,10 +30,10 @@ class ParticipantScreen extends StatelessWidget {
             participantName: p.name,
             bibNumber: p.bibNumber,
             onEditPressed: () {
-              showParticipantDialog(context, participants, p);
+              ParticipantDialog.show(context, participants, p);
             },
             onDeletePressed: () {
-              showDeleteConfirmation(context, p);
+              DeleteConfirmationDialog.show(context, p);
             },
           );
         },
@@ -74,7 +76,7 @@ class ParticipantScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              showParticipantDialog(context, participants, null);
+              ParticipantDialog.show(context, participants, null);
             },
             icon: const Icon(
               Icons.add, // or Icons.add_box, Icons.person_add, etc.
@@ -93,155 +95,4 @@ class ParticipantScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-void showDeleteConfirmation(BuildContext context, Participant p) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Delete Participant'),
-        content: Text('Are you sure you want to delete ${p.name}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              ParticipantProvider().deleteParticipant(p.id);
-              Navigator.of(context).pop();
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: RTColors.error),
-            child: const Text('Delete'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-void showParticipantDialog(
-  BuildContext context,
-  List<Participant> currentList,
-  Participant? participantToEdit,
-) {
-  final formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController(
-    text: participantToEdit?.name ?? '',
-  );
-  final bibNumberController = TextEditingController(
-    text: participantToEdit?.bibNumber.toString() ?? '',
-  );
-
-  final isEdit = participantToEdit != null;
-  final label = isEdit ? "Edit" : "Add";
-
-  final provider = ParticipantProvider();
-
-  bool isDuplicate(int bibNumber) {
-    return currentList.any((p) => p.bibNumber == bibNumber);
-  }
-
-  bool isDuplicateOnEdit(String name, int bibNumber, String id) {
-    return currentList.any(
-      (p) => p.id != id && (p.name == name || p.bibNumber == bibNumber),
-    );
-  }
-
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text('$label Participant'),
-        content: SizedBox(
-          width: 400, // adjust width as needed
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: "Name",
-                    border: OutlineInputBorder(),
-                  ),
-                  validator:
-                      (value) =>
-                          (value == null || value.trim().isEmpty)
-                              ? "Enter a name"
-                              : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: bibNumberController,
-                  decoration: const InputDecoration(
-                    labelText: "BIB Number",
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (value) {
-                    final num = int.tryParse(value ?? '');
-                    if (num == null || num <= 0) {
-                      return "Enter a valid number";
-                    }
-                    return null;
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                final name = nameController.text.trim();
-                final bibNumber = int.parse(bibNumberController.text.trim());
-
-                if (isEdit) {
-                  if (isDuplicateOnEdit(
-                    name,
-                    bibNumber,
-                    participantToEdit.id,
-                  )) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Name or Bib Number already exists'),
-                      ),
-                    );
-                    return;
-                  }
-                  provider.updateParticipant(
-                    participantToEdit.id,
-                    name,
-                    bibNumber,
-                  );
-                } else {
-                  if (isDuplicate(bibNumber)) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Bib Number already exists'),
-                      ),
-                    );
-                    return;
-                  }
-                  provider.addParticipant(name, bibNumber);
-                }
-
-                Navigator.pop(context);
-              }
-            },
-            child: Text(label),
-          ),
-        ],
-      );
-    },
-  );
 }
