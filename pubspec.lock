@@ -134,6 +134,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_flip_clock:
+    dependency: "direct main"
+    description:
+      name: flutter_flip_clock
+      sha256: "621ae4cf1c3af6bc03f9c998fa3aa76c0d3986be4f1a42eb7027ca2f864546d2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   flutter_lints:
     dependency: "direct dev"
     description:

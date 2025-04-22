@@ -11,45 +11,62 @@ class ParticipantScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final participantProvider = Provider.of<ParticipantProvider>(context);
+    final participants = Provider.of<List<Participant>>(context);
 
     Widget content = const SizedBox.shrink();
 
-    if (participantProvider.isLoading) {
-      content = const Center(child: CircularProgressIndicator());
-    } else if (participantProvider.hasData) {
-      final participants = participantProvider.participantState?.data ?? [];
-
-      if (participants.isEmpty) {
-        content = const Center(child: Text('No participants found'));
-      } else {
-        content = ListView.separated(
-          itemCount: participants.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          itemBuilder: (context, index) {
-            final p = participants[index];
-            return ParticipantCard(
-              participantName: p.name,
-              bibNumber: p.bibNumber,
-              onEditPressed: () {
-                showParticipantDialog(context, participantProvider, p);
-              },
-              onDeletePressed: () {
-                showDeleteConfirmation(context, participantProvider, p);
-              },
-            );
-          },
-        );
-      }
-    } else if (participantProvider.participantState?.error != null) {
-      content = Center(
-        child: Text(
-          'Error: ${participantProvider.participantState?.error}',
-          style: const TextStyle(color: RTColors.error),
-        ),
+    if (participants.isEmpty) {
+      content = const Center(child: Text('No participants found'));
+    } else {
+      content = ListView.separated(
+        itemCount: participants.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        itemBuilder: (context, index) {
+          final p = participants[index];
+          return ParticipantCard(
+            participantName: p.name,
+            bibNumber: p.bibNumber,
+            onEditPressed: () {
+              showParticipantDialog(context, participants, p);
+            },
+            onDeletePressed: () {
+              showDeleteConfirmation(context, p);
+            },
+          );
+        },
       );
     }
+
+    Widget headerRow = Container(
+      color: RTColors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              "Name",
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: RTColors.textPrimary,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 4,
+            child: Text(
+              "BIB Number",
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: RTColors.textPrimary,
+              ),
+            ),
+          ),
+          const SizedBox(width: 40), // Space for edit icon
+        ],
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -57,7 +74,7 @@ class ParticipantScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              showParticipantDialog(context, participantProvider, null);
+              showParticipantDialog(context, participants, null);
             },
             icon: const Icon(
               Icons.add, // or Icons.add_box, Icons.person_add, etc.
@@ -69,35 +86,7 @@ class ParticipantScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Container(
-            color: RTColors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    "Name",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: RTColors.textPrimary,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Text(
-                    "BIB Number",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: RTColors.textPrimary,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 40), // Space for edit icon
-              ],
-            ),
-          ),
+          headerRow,
           const Divider(height: 1),
           Expanded(child: content),
         ],
@@ -106,11 +95,7 @@ class ParticipantScreen extends StatelessWidget {
   }
 }
 
-void showDeleteConfirmation(
-  BuildContext context,
-  ParticipantProvider participantProvider,
-  Participant p,
-) {
+void showDeleteConfirmation(BuildContext context, Participant p) {
   showDialog(
     context: context,
     builder: (context) {
@@ -124,7 +109,7 @@ void showDeleteConfirmation(
           ),
           ElevatedButton(
             onPressed: () {
-              participantProvider.deleteParticipant(p.id);
+              ParticipantProvider().deleteParticipant(p.id);
               Navigator.of(context).pop();
             },
             style: ElevatedButton.styleFrom(backgroundColor: RTColors.error),
@@ -138,7 +123,7 @@ void showDeleteConfirmation(
 
 void showParticipantDialog(
   BuildContext context,
-  ParticipantProvider provider,
+  List<Participant> currentList,
   Participant? participantToEdit,
 ) {
   final formKey = GlobalKey<FormState>();
@@ -151,6 +136,18 @@ void showParticipantDialog(
 
   final isEdit = participantToEdit != null;
   final label = isEdit ? "Edit" : "Add";
+
+  final provider = ParticipantProvider();
+
+  bool isDuplicate(int bibNumber) {
+    return currentList.any((p) => p.bibNumber == bibNumber);
+  }
+
+  bool isDuplicateOnEdit(String name, int bibNumber, String id) {
+    return currentList.any(
+      (p) => p.id != id && (p.name == name || p.bibNumber == bibNumber),
+    );
+  }
 
   showDialog(
     context: context,
@@ -209,7 +206,7 @@ void showParticipantDialog(
                 final bibNumber = int.parse(bibNumberController.text.trim());
 
                 if (isEdit) {
-                  if (provider.isDuplicateOnEdit(
+                  if (isDuplicateOnEdit(
                     name,
                     bibNumber,
                     participantToEdit.id,
@@ -221,13 +218,13 @@ void showParticipantDialog(
                     );
                     return;
                   }
-                  provider.editParticipant(
+                  provider.updateParticipant(
+                    participantToEdit.id,
                     name,
                     bibNumber,
-                    participantToEdit.id,
                   );
                 } else {
-                  if (provider.isDuplicate(bibNumber)) {
+                  if (isDuplicate(bibNumber)) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Bib Number already exists'),
