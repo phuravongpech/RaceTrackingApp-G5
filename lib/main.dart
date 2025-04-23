@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/firebase_options.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/providers/participant_provider.dart';
+import 'package:race_tracking_app_g5/screens/leaderboard/leaderboard_screen.dart';
 import 'package:race_tracking_app_g5/screens/participant/participant_screen.dart';
 import 'package:race_tracking_app_g5/screens/race/race_screen.dart';
+import 'package:race_tracking_app_g5/screens/segment/segment_tracking_screen.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
 
 void main() async {
@@ -24,7 +26,12 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = [const RaceScreen(), const ParticipantScreen()];
+  final List<Widget> _screens = [
+    const RaceScreen(),
+    const SegmentTrackingScreen(),
+    const ParticipantScreen(),
+    const LeaderboardScreen(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -46,15 +53,25 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         theme: appTheme,
         home: Scaffold(
-          body: _screens[_selectedIndex],
+          body: IndexedStack(index: _selectedIndex, children: _screens),
+
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
+            type: BottomNavigationBarType.fixed,
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.run_circle_outlined, size: 30),
+                label: 'Race',
+              ),
+              BottomNavigationBarItem(icon: Icon(Icons.flag), label: 'Segment'),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person),
                 label: 'Participant',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.leaderboard_outlined),
+                label: 'Leaderboard',
               ),
             ],
           ),

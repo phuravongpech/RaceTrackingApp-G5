@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
-import 'package:race_tracking_app_g5/providers/participant_provider.dart';
 import 'package:race_tracking_app_g5/screens/participant/widgets/delete_confirmation_dialog.dart';
 import 'package:race_tracking_app_g5/screens/participant/widgets/participant_card.dart';
 import 'package:race_tracking_app_g5/screens/participant/widgets/participant_dialogs.dart';
@@ -72,17 +70,15 @@ class ParticipantScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
+        titleSpacing: 20,
         title: const Text('Participants'),
         actions: [
           IconButton(
             onPressed: () {
               ParticipantDialog.show(context, participants, null);
             },
-            icon: const Icon(
-              Icons.add, // or Icons.add_box, Icons.person_add, etc.
-              size: 32,
-              color: RTColors.primary,
-            ),
+            icon: const Icon(Icons.add, size: 32, color: RTColors.primary),
           ),
         ],
       ),

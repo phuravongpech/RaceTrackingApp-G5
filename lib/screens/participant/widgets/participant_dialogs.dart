@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/providers/participant_provider.dart';
-import 'package:race_tracking_app_g5/theme/theme.dart';
 
 class ParticipantDialog extends StatefulWidget {
   final List<Participant> currentList;
@@ -116,6 +115,7 @@ class _ParticipantDialogState extends State<ParticipantDialog> {
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: "Name",
+                  labelStyle: TextStyle(),
                   border: OutlineInputBorder(),
                 ),
                 validator:

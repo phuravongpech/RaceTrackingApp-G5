@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class RTColors {
   // Base palette
@@ -25,59 +26,45 @@ class RTColors {
 }
 
 class RTTextStyles {
-  static const TextStyle heading = TextStyle(
+  static final TextStyle heading = GoogleFonts.poppins(
     fontSize: 22,
     fontWeight: FontWeight.w700,
     color: RTColors.textPrimary,
     letterSpacing: 0.5,
     height: 1.3,
-    fontFamily: 'Poppins',
   );
 
-  static const TextStyle title = TextStyle(
+  static final TextStyle title = GoogleFonts.poppins(
     fontSize: 18,
     fontWeight: FontWeight.w600,
     color: RTColors.textPrimary,
     letterSpacing: 0.25,
     height: 1.4,
-    fontFamily: 'Poppins',
   );
 
-  static const TextStyle body = TextStyle(
+  static final TextStyle body = GoogleFonts.poppins(
     fontSize: 16,
     fontWeight: FontWeight.w400,
     color: RTColors.textPrimary,
     height: 1.5,
-    fontFamily: 'Poppins',
   );
 
-  static const TextStyle subBody = TextStyle(
+  static final TextStyle subBody = GoogleFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: RTColors.textSecondary,
     height: 1.4,
-    fontFamily: 'Poppins',
   );
 
-  static const TextStyle label = TextStyle(
+  static final TextStyle label = GoogleFonts.poppins(
     fontSize: 13,
     fontWeight: FontWeight.w500,
     color: RTColors.textSecondary,
     letterSpacing: 0.15,
-    fontFamily: 'Poppins',
-  );
-
-  static const TextStyle button = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w700,
-    color: RTColors.white,
-    letterSpacing: 1.25,
-    fontFamily: 'Poppins',
   );
 }
 
 ThemeData appTheme = ThemeData(
-  fontFamily: 'Poppins',
   primaryColor: RTColors.primary,
   scaffoldBackgroundColor: RTColors.white,
   colorScheme: ColorScheme.light(
@@ -98,15 +85,14 @@ ThemeData appTheme = ThemeData(
     bodyLarge: RTTextStyles.body,
     bodyMedium: RTTextStyles.subBody,
     bodySmall: RTTextStyles.label,
-    labelLarge: RTTextStyles.button,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: RTColors.primary,
       foregroundColor: RTColors.white,
+      disabledBackgroundColor: RTColors.textSecondary.withOpacity(0.5),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      textStyle: RTTextStyles.button,
     ),
   ),
   textButtonTheme: TextButtonThemeData(
@@ -139,8 +125,9 @@ ThemeData appTheme = ThemeData(
     backgroundColor: RTColors.white,
     foregroundColor: RTColors.textPrimary,
     elevation: 0,
-    centerTitle: true,
-    titleTextStyle: RTTextStyles.heading.copyWith(fontSize: 24),
+    centerTitle: false,
+    titleSpacing: 20,
+    titleTextStyle: RTTextStyles.heading.copyWith(fontSize: 30),
     iconTheme: const IconThemeData(color: RTColors.textPrimary, size: 30),
     shadowColor: RTColors.textSecondary,
   ),
