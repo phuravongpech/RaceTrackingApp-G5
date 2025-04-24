@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/firebase_options.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
+import 'package:race_tracking_app_g5/models/race.dart';
 import 'package:race_tracking_app_g5/providers/participant_provider.dart';
+import 'package:race_tracking_app_g5/providers/race_provider.dart';
 import 'package:race_tracking_app_g5/screens/leaderboard/leaderboard_screen.dart';
 import 'package:race_tracking_app_g5/screens/participant/participant_screen.dart';
 import 'package:race_tracking_app_g5/screens/race/race_screen.dart';
@@ -43,8 +45,21 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<RaceProvider>(create: (_) => RaceProvider()),
+        StreamProvider<Race?>(
+          create: (context) => context.read<RaceProvider>().raceStream,
+          initialData: Race(raceStatus: RaceStatus.notStarted, startTime: 0),
+          catchError: (_, __) => null,
+        ),
+        Provider<ParticipantProvider>(create: (_) => ParticipantProvider()),
         StreamProvider<List<Participant>>(
-          create: (_) => ParticipantProvider().stream,
+          create: (context) {
+            final participantProvider = Provider.of<ParticipantProvider>(
+              context,
+              listen: false,
+            );
+            return participantProvider.stream;
+          },
           initialData: [],
           catchError: (_, __) => [],
         ),

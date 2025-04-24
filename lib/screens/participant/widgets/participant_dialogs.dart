@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/providers/participant_provider.dart';
 
@@ -72,7 +73,7 @@ class _ParticipantDialogState extends State<ParticipantDialog> {
 
     final name = _nameController.text.trim();
     final bib = int.parse(_bibController.text.trim());
-    final provider = ParticipantProvider();
+    final provider = Provider.of<ParticipantProvider>(context, listen: false);
 
     if (isEdit) {
       final id = widget.participantToEdit!.id;

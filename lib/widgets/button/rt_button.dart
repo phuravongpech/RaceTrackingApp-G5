@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
 
-enum RtButtonType { primary, secondary }
+enum RtButtonType { primary, secondary, disabled }
 
 class RtButton extends StatelessWidget {
   final String text;
@@ -24,22 +24,33 @@ class RtButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPrimary = type == RtButtonType.primary;
+    final isDisabled = type == RtButtonType.disabled;
 
     return SizedBox(
       width: fullWidth ? double.infinity : 200,
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
+        onPressed: isDisabled || isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isPrimary ? RTColors.primary : RTColors.white,
-          foregroundColor: isPrimary ? RTColors.white : RTColors.primary,
+          backgroundColor:
+              isDisabled
+                  ? RTColors.textSecondary.withOpacity(0.5)
+                  : isPrimary
+                  ? RTColors.primary
+                  : RTColors.white,
+          foregroundColor:
+              isDisabled
+                  ? RTColors.white
+                  : isPrimary
+                  ? RTColors.white
+                  : RTColors.primary,
           disabledBackgroundColor: RTColors.textSecondary.withOpacity(0.5),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
             side:
-                type == RtButtonType.secondary
-                    ? const BorderSide(color: RTColors.primary)
-                    : BorderSide.none,
+                isPrimary || isDisabled
+                    ? BorderSide.none
+                    : const BorderSide(color: RTColors.primary),
           ),
         ),
         child: _buildButtonContent(),
@@ -59,20 +70,24 @@ class RtButton extends StatelessWidget {
       );
     }
 
+    final textColor =
+        type == RtButtonType.disabled
+            ? RTColors.white
+            : type == RtButtonType.primary
+            ? RTColors.white
+            : RTColors.primary;
+
     if (icon != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 20),
+          Icon(icon, size: 20, color: textColor),
           const SizedBox(width: 8),
           Text(
             text,
             style: RTTextStyles.body.copyWith(
               fontWeight: FontWeight.w600,
-              color:
-                  type == RtButtonType.primary
-                      ? RTColors.white
-                      : RTColors.primary,
+              color: textColor,
             ),
           ),
         ],
@@ -83,7 +98,7 @@ class RtButton extends StatelessWidget {
       text,
       style: RTTextStyles.body.copyWith(
         fontWeight: FontWeight.w600,
-        color: type == RtButtonType.primary ? RTColors.white : RTColors.primary,
+        color: textColor,
       ),
     );
   }
