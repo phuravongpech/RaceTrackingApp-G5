@@ -6,6 +6,7 @@ import 'package:race_tracking_app_g5/providers/race_provider.dart';
 import 'package:race_tracking_app_g5/screens/participant/widgets/participant_list_view.dart';
 import 'package:race_tracking_app_g5/screens/race/widgets/race_clock_timer.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
+import 'package:race_tracking_app_g5/utils/dialog_util.dart';
 import 'package:race_tracking_app_g5/widgets/button/rt_button.dart';
 
 class RaceScreen extends StatelessWidget {
@@ -23,6 +24,40 @@ class RaceScreen extends StatelessWidget {
     final participants = Provider.of<List<Participant>>(context);
     final screenHeight = MediaQuery.of(context).size.height;
 
+    Future<void> handleRaceAction(RaceStatus status) async {
+      switch (status) {
+        case RaceStatus.notStarted:
+          raceProvider.startRace();
+          break;
+        case RaceStatus.started:
+          final shouldFinish = await DialogUtil.showConfirmationDialog(
+            context: context,
+            title: 'Finish Race',
+            message: 'Are you sure you want to finish the race?',
+            confirmText: 'Finish',
+            confirmColor: RTColors.primary,
+          );
+          if (shouldFinish) {
+            raceProvider.finishRace();
+          }
+          break;
+        case RaceStatus.finished:
+          break;
+      }
+    }
+
+    Future<void> handleRestart() async {
+      final shouldRestart = await DialogUtil.showConfirmationDialog(
+        context: context,
+        title: 'Restart Race',
+        message: 'Are you sure you want to restart the race?',
+        confirmText: 'Restart',
+      );
+      if (shouldRestart) {
+        raceProvider.restartRace();
+      }
+    }
+
     Widget button = RtButton(
       text: () {
         if (race == null) return 'Loading...';
@@ -37,16 +72,7 @@ class RaceScreen extends StatelessWidget {
       }(),
       onPressed: () {
         if (race == null) return;
-
-        switch (race.raceStatus) {
-          case RaceStatus.notStarted:
-            raceProvider.startRace();
-            break;
-          case RaceStatus.started:
-            raceProvider.finishRace();
-          case RaceStatus.finished:
-            break;
-        }
+        handleRaceAction(race.raceStatus);
       },
       type: () {
         if (race == null) return RtButtonType.primary;
@@ -62,45 +88,12 @@ class RaceScreen extends StatelessWidget {
       fullWidth: false,
     );
 
-    void showRestartRaceDialog(BuildContext context) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Restart Race'),
-            content: const Text('Are you sure you want to restart the race?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Provider.of<RaceProvider>(
-                    context,
-                    listen: false,
-                  ).restartRace();
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: RTColors.error,
-                ),
-                child: const Text('Restart'),
-              ),
-            ],
-          );
-        },
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Race'),
         actions: [
           IconButton(
-            onPressed: () {
-              showRestartRaceDialog(context);
-            },
+            onPressed: handleRestart,
             icon: Icon(
               Icons.settings_backup_restore_rounded,
               size: 40,

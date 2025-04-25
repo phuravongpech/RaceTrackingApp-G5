@@ -95,6 +95,16 @@ ThemeData appTheme = ThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
   ),
+  dialogTheme: DialogTheme(
+    titleTextStyle: RTTextStyles.heading.copyWith(
+      fontSize: 24,
+      fontWeight: FontWeight.bold,
+      color: RTColors.textPrimary,
+    ),
+
+    contentTextStyle: RTTextStyles.body.copyWith(color: RTColors.textSecondary),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+  ),
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       foregroundColor: RTColors.primary,

@@ -18,8 +18,25 @@ class DeleteConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Delete Participant'),
-      content: Text('Are you sure you want to delete ${participant.name}?'),
+      title: Text('Delete Participant'),
+      content: RichText(
+        text: TextSpan(
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(color: RTColors.textPrimary),
+          children: [
+            const TextSpan(
+              text: 'Are you sure you want to delete ',
+              style: TextStyle(color: RTColors.textSecondary),
+            ),
+            TextSpan(
+              text: participant.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const TextSpan(text: '?'),
+          ],
+        ),
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
