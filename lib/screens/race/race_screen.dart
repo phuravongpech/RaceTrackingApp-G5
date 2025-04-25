@@ -7,6 +7,7 @@ import 'package:race_tracking_app_g5/screens/participant/widgets/participant_lis
 import 'package:race_tracking_app_g5/screens/race/widgets/race_clock_timer.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
 import 'package:race_tracking_app_g5/utils/dialog_util.dart';
+import 'package:race_tracking_app_g5/utils/snack_bar_util.dart';
 import 'package:race_tracking_app_g5/widgets/button/rt_button.dart';
 
 class RaceScreen extends StatelessWidget {
@@ -27,6 +28,15 @@ class RaceScreen extends StatelessWidget {
     Future<void> handleRaceAction(RaceStatus status) async {
       switch (status) {
         case RaceStatus.notStarted:
+          if (participants.isEmpty) {
+            SnackBarUtil.show(
+              context,
+              message: "No current participants",
+              isError: true,
+            );
+            return;
+          }
+
           raceProvider.startRace();
           break;
         case RaceStatus.started:
@@ -121,7 +131,6 @@ class RaceScreen extends StatelessWidget {
               const SizedBox(height: 20),
               const Center(child: RaceClockLive()),
               const SizedBox(height: 20),
-
               button,
               const SizedBox(height: 20),
 
