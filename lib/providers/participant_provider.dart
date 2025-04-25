@@ -10,9 +10,16 @@ class ParticipantProvider extends ChangeNotifier {
     return _ref.onValue.map((event) {
       final data = event.snapshot.value as Map?;
       if (data == null) return [];
-      return data.entries.map((e) {
-        return Participant.fromMap(Map<String, dynamic>.from(e.value), e.key);
-      }).toList();
+      final participants =
+          data.entries.map((e) {
+            return Participant.fromMap(
+              Map<String, dynamic>.from(e.value),
+              e.key,
+            );
+          }).toList();
+      // Sort participants by bib number
+      participants.sort((a, b) => a.bibNumber.compareTo(b.bibNumber));
+      return participants;
     });
   }
 
