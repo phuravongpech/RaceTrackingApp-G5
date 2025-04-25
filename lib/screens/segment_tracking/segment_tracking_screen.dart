@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/models/segment_time.dart';
 import 'package:race_tracking_app_g5/screens/race/widgets/race_clock_timer.dart';
-import 'package:race_tracking_app_g5/screens/segment/widgets/participant_grid_card.dart';
+import 'package:race_tracking_app_g5/screens/segment_tracking/widgets/participant_grid_card.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
 
 class SegmentTrackingScreen extends StatefulWidget {
@@ -64,7 +64,13 @@ class _SegmentTrackingScreenState extends State<SegmentTrackingScreen> {
                             color: RTColors.backgroundAccent,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(segment.label),
+                          child: Text(
+                            segment.label,
+                            style: TextStyle(
+                              color: RTColors.primary,
+                              fontSize: 25,
+                            ),
+                          ),
                         ),
                       );
                     }).toList(),

@@ -10,7 +10,7 @@ import 'package:race_tracking_app_g5/providers/segment_tracking_provider.dart';
 import 'package:race_tracking_app_g5/screens/dashboard/dashboard_screen.dart';
 import 'package:race_tracking_app_g5/screens/participant/participant_screen.dart';
 import 'package:race_tracking_app_g5/screens/race/race_screen.dart';
-import 'package:race_tracking_app_g5/screens/segment/segment_tracking_screen.dart';
+import 'package:race_tracking_app_g5/screens/segment_tracking/segment_tracking_screen.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
 
 void main() async {

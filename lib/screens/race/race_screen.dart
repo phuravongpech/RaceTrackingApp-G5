@@ -62,21 +62,6 @@ class RaceScreen extends StatelessWidget {
       fullWidth: false,
     );
 
-    Color getStatusColor(RaceStatus? status) {
-      if (status == null) {
-        return RTColors.textSecondary; // Default to secondary color (grey)
-      }
-
-      switch (status) {
-        case RaceStatus.notStarted:
-          return RTColors.textSecondary; // Grey color
-        case RaceStatus.started:
-          return RTColors.primary; // Green or active color
-        case RaceStatus.finished:
-          return RTColors.textSecondary; // Blue color for finished
-      }
-    }
-
     void showRestartRaceDialog(BuildContext context) {
       showDialog(
         context: context,
@@ -143,22 +128,7 @@ class RaceScreen extends StatelessWidget {
               const SizedBox(height: 20),
               const Center(child: RaceClockLive()),
               const SizedBox(height: 20),
-              Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.circle, color: getStatusColor(race.raceStatus)),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Status : ${race.raceStatus.label}',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: getStatusColor(race.raceStatus),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
+
               button,
               const SizedBox(height: 20),
 

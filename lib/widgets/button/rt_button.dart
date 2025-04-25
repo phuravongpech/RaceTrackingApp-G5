@@ -97,7 +97,7 @@ class RtButton extends StatelessWidget {
     return Text(
       text,
       style: RTTextStyles.body.copyWith(
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w800,
         color: textColor,
       ),
     );

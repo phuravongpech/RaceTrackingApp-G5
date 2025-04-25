@@ -71,7 +71,10 @@ class ParticipantGridCard extends StatelessWidget {
               Text(
                 bibNumber.toString(),
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: RTColors.primary,
+                  color:
+                      race!.raceStatus == RaceStatus.started
+                          ? RTColors.primary
+                          : RTColors.textSecondary,
                   fontWeight: FontWeight.bold,
                   fontSize: 40,
                 ),

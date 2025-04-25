@@ -43,6 +43,21 @@ class _RaceClockLiveState extends State<RaceClockLive> {
 
   @override
   Widget build(BuildContext context) {
+    Color getStatusColor(RaceStatus? status) {
+      if (status == null) {
+        return RTColors.textSecondary; // Default to secondary color (grey)
+      }
+
+      switch (status) {
+        case RaceStatus.notStarted:
+          return RTColors.textSecondary; // Grey color
+        case RaceStatus.started:
+          return RTColors.primary; // Green or active color
+        case RaceStatus.finished:
+          return RTColors.textSecondary; // Blue color for finished
+      }
+    }
+
     return StreamBuilder<Race?>(
       stream: context.read<RaceProvider>().raceStream,
       builder: (context, snapshot) {
@@ -77,29 +92,49 @@ class _RaceClockLiveState extends State<RaceClockLive> {
           }
         }
 
-        return Container(
-          margin: const EdgeInsets.all(10),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          decoration: BoxDecoration(
-            color: RTColors.backgroundAccent,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: RTColors.textSecondary.withOpacity(0.2),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
+        return Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(10),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: RTColors.backgroundAccent,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: RTColors.textSecondary.withOpacity(0.2),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Center(
-            child: Text(
-              displayTime,
-              style: RTTextStyles.heading.copyWith(
-                fontSize: 56,
-                color: RTColors.textPrimary,
+              child: Center(
+                child: Text(
+                  displayTime,
+                  style: RTTextStyles.heading.copyWith(
+                    fontSize: 56,
+                    color: RTColors.textPrimary,
+                  ),
+                ),
               ),
             ),
-          ),
+            const SizedBox(height: 20),
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.circle, color: getStatusColor(race!.raceStatus)),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Status : ${race.raceStatus.label}',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: getStatusColor(race.raceStatus),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         );
       },
     );
