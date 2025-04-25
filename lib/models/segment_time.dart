@@ -27,7 +27,7 @@ class SegmentTime {
 
   factory SegmentTime.fromMap(Map<String, dynamic> map) {
     return SegmentTime(
-      segment: map['segment'],
+      segment: _statusFromString(map['segment']),
       participantId: map['participantId'],
       elapsedTimeInSeconds: map['elapsedTimeInSeconds'] ?? 'N/A',
     );

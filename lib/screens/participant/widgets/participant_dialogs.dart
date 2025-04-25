@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/providers/participant_provider.dart';
+import 'package:race_tracking_app_g5/utils/snack_bar_util.dart';
 
 class ParticipantDialog extends StatefulWidget {
   final List<Participant> currentList;
@@ -94,9 +95,7 @@ class _ParticipantDialogState extends State<ParticipantDialog> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    SnackBarUtil.show(context, message: message, isError: true);
   }
 
   @override

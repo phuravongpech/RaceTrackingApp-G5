@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class LeaderboardScreen extends StatelessWidget {
-  const LeaderboardScreen({super.key});
+class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Leaderboard')),
+      appBar: AppBar(title: Text('Dashboard')),
       body: Center(
         child: Text(
-          'Leaderboard Screen',
+          'Dashboard Screen',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),

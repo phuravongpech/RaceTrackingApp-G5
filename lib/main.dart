@@ -6,7 +6,8 @@ import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/models/race.dart';
 import 'package:race_tracking_app_g5/providers/participant_provider.dart';
 import 'package:race_tracking_app_g5/providers/race_provider.dart';
-import 'package:race_tracking_app_g5/screens/leaderboard/leaderboard_screen.dart';
+import 'package:race_tracking_app_g5/providers/segment_tracking_provider.dart';
+import 'package:race_tracking_app_g5/screens/dashboard/dashboard_screen.dart';
 import 'package:race_tracking_app_g5/screens/participant/participant_screen.dart';
 import 'package:race_tracking_app_g5/screens/race/race_screen.dart';
 import 'package:race_tracking_app_g5/screens/segment/segment_tracking_screen.dart';
@@ -32,7 +33,7 @@ class _MyAppState extends State<MyApp> {
     const RaceScreen(),
     const SegmentTrackingScreen(),
     const ParticipantScreen(),
-    const LeaderboardScreen(),
+    const DashboardScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -46,6 +47,9 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         Provider<RaceProvider>(create: (_) => RaceProvider()),
+        Provider<SegmentTrackingProvider>(
+          create: (_) => SegmentTrackingProvider(),
+        ),
         StreamProvider<Race?>(
           create: (context) => context.read<RaceProvider>().raceStream,
           initialData: Race(
@@ -92,7 +96,7 @@ class _MyAppState extends State<MyApp> {
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.leaderboard_outlined),
-                label: 'Leaderboard',
+                label: 'Dashboard',
               ),
             ],
           ),
