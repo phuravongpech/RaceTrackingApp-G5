@@ -17,13 +17,19 @@ class Race {
   RaceStatus raceStatus = RaceStatus.notStarted;
   //timestamp in milliseconds
   final int startTime;
+  final int endTime;
 
-  Race({required this.raceStatus, required this.startTime});
+  Race({
+    required this.raceStatus,
+    required this.startTime,
+    required this.endTime,
+  });
 
   factory Race.fromMap(Map<String, dynamic> map) {
     return Race(
       raceStatus: _statusFromString(map['raceStatus']),
       startTime: map['startTime'] ?? 0,
+      endTime: map['endTime'] ?? 0,
     );
   }
 

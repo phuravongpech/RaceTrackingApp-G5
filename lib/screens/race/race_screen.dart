@@ -4,9 +4,8 @@ import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/models/race.dart';
 import 'package:race_tracking_app_g5/providers/race_provider.dart';
 import 'package:race_tracking_app_g5/screens/participant/widgets/participant_list_view.dart';
-import 'package:race_tracking_app_g5/screens/race/widgets/race_flip_clock.dart';
+import 'package:race_tracking_app_g5/screens/race/widgets/race_clock_timer.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
-import 'package:race_tracking_app_g5/utils/date_time_util.dart';
 import 'package:race_tracking_app_g5/widgets/button/rt_button.dart';
 
 class RaceScreen extends StatelessWidget {
@@ -16,7 +15,6 @@ class RaceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     //race is for accessing the race object in provider
     final race = Provider.of<Race?>(context);
-    print('Race received: $race');
     //race provider is for accessing the methods inside that provider
     //listen is false cuz we are only calling methods no need to rebuild
     final raceProvider = Provider.of<RaceProvider>(context, listen: false);
@@ -132,27 +130,29 @@ class RaceScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
-              // Center(
-              //   child: Text(
-              //     DateTimeUtil.formatDate(DateTime.now()),
-              //     style: Theme.of(
-              //       context,
-              //     ).textTheme.headlineSmall?.copyWith(color: RTColors.black),
-              //   ),
-              // ),
+              Center(
+                child: Text(
+                  DateTime.fromMillisecondsSinceEpoch(
+                    race!.startTime,
+                  ).toString(),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.headlineSmall?.copyWith(color: RTColors.black),
+                ),
+              ),
               const SizedBox(height: 20),
-              const Center(child: RaceFlipClock()),
+              const Center(child: RaceClockLive()),
               const SizedBox(height: 20),
               Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.circle, color: getStatusColor(race?.raceStatus)),
+                    Icon(Icons.circle, color: getStatusColor(race.raceStatus)),
                     const SizedBox(width: 8),
                     Text(
-                      'Status : ${race != null ? race.raceStatus.label : 'Unknown'}',
+                      'Status : ${race.raceStatus.label}',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: getStatusColor(race?.raceStatus),
+                        color: getStatusColor(race.raceStatus),
                       ),
                     ),
                   ],

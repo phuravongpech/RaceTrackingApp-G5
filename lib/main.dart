@@ -48,10 +48,16 @@ class _MyAppState extends State<MyApp> {
         Provider<RaceProvider>(create: (_) => RaceProvider()),
         StreamProvider<Race?>(
           create: (context) => context.read<RaceProvider>().raceStream,
-          initialData: Race(raceStatus: RaceStatus.notStarted, startTime: 0),
+          initialData: Race(
+            raceStatus: RaceStatus.notStarted,
+            startTime: 0,
+            endTime: 0,
+          ),
           catchError: (_, __) => null,
         ),
-        Provider<ParticipantProvider>(create: (_) => ParticipantProvider()),
+        ChangeNotifierProvider<ParticipantProvider>(
+          create: (_) => ParticipantProvider(),
+        ),
         StreamProvider<List<Participant>>(
           create: (context) {
             final participantProvider = Provider.of<ParticipantProvider>(

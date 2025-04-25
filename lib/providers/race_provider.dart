@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/material.dart';
 import 'package:race_tracking_app_g5/models/race.dart';
 
 class RaceProvider {
@@ -9,7 +8,6 @@ class RaceProvider {
   Stream<Race?> get raceStream {
     return _ref.onValue.map((event) {
       final data = event.snapshot.value;
-      print('Raw race data: $data'); // 👈 Add this
       if (data != null && data is Map) {
         return Race.fromMap(Map<String, dynamic>.from(data));
       } else {
@@ -26,7 +24,10 @@ class RaceProvider {
   }
 
   Future<void> finishRace() async {
-    await _ref.update({'raceStatus': 'finished'});
+    await _ref.update({
+      'raceStatus': 'finished',
+      'endTime': DateTime.now().millisecondsSinceEpoch,
+    });
   }
 
   Future<void> restartRace() async {
