@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/models/race.dart';
 import 'package:race_tracking_app_g5/providers/race_provider.dart';
+import 'package:race_tracking_app_g5/providers/segment_tracking_provider.dart';
 import 'package:race_tracking_app_g5/screens/participant/widgets/participant_list_view.dart';
 import 'package:race_tracking_app_g5/screens/race/widgets/race_clock_timer.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
@@ -23,6 +24,11 @@ class RaceScreen extends StatelessWidget {
 
     //same goes here as we only want the list of participants
     final participants = Provider.of<List<Participant>>(context);
+
+    final segmentProvider = Provider.of<SegmentTrackingProvider>(
+      context,
+      listen: false,
+    );
     final screenHeight = MediaQuery.of(context).size.height;
 
     Future<void> handleRaceAction(RaceStatus status) async {
@@ -50,6 +56,7 @@ class RaceScreen extends StatelessWidget {
           if (shouldFinish) {
             raceProvider.finishRace();
           }
+
           break;
         case RaceStatus.finished:
           break;
@@ -65,6 +72,11 @@ class RaceScreen extends StatelessWidget {
       );
       if (shouldRestart) {
         raceProvider.restartRace();
+        segmentProvider.clearAllSegments();
+        SnackBarUtil.show(
+          context,
+          message: "Race restarted, Race data cleared",
+        );
       }
     }
 

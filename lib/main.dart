@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/firebase_options.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/models/race.dart';
+import 'package:race_tracking_app_g5/models/segment_time.dart';
 import 'package:race_tracking_app_g5/providers/participant_provider.dart';
 import 'package:race_tracking_app_g5/providers/race_provider.dart';
 import 'package:race_tracking_app_g5/providers/segment_tracking_provider.dart';
@@ -46,10 +47,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        //race providers
         Provider<RaceProvider>(create: (_) => RaceProvider()),
-        Provider<SegmentTrackingProvider>(
-          create: (_) => SegmentTrackingProvider(),
-        ),
         StreamProvider<Race?>(
           create: (context) => context.read<RaceProvider>().raceStream,
           initialData: Race(
@@ -59,6 +58,8 @@ class _MyAppState extends State<MyApp> {
           ),
           catchError: (_, __) => null,
         ),
+        
+        //participant providers
         ChangeNotifierProvider<ParticipantProvider>(
           create: (_) => ParticipantProvider(),
         ),
@@ -72,6 +73,15 @@ class _MyAppState extends State<MyApp> {
           },
           initialData: [],
           catchError: (_, __) => [],
+        ),
+
+        //segment providers
+        ChangeNotifierProvider<SegmentTrackingProvider>(
+          create: (_) => SegmentTrackingProvider(),
+        ),
+        StreamProvider<List<SegmentTime>>(
+          create: (ctx) => ctx.read<SegmentTrackingProvider>().segmentsStream,
+          initialData: [],
         ),
       ],
       child: MaterialApp(
