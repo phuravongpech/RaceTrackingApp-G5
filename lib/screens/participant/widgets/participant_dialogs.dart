@@ -115,24 +115,38 @@ class _ParticipantDialogState extends State<ParticipantDialog> {
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: "Name",
-                  labelStyle: TextStyle(),
                   border: OutlineInputBorder(),
                 ),
-                validator:
-                    (value) =>
-                        (value == null || value.trim().isEmpty)
-                            ? "Enter a name"
-                            : null,
+                keyboardType: TextInputType.text,
+                textCapitalization:
+                    TextCapitalization.words, // Capitalize each word
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'[a-zA-Z\s]'),
+                  ), // Only letters and spaces
+                ],
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Enter a name";
+                  }
+                  if (value.trim().length < 2) {
+                    return "Name must be at least 2 characters";
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _bibController,
                 decoration: const InputDecoration(
-                  labelText: "BIB Number",
+                  labelText: "BIB Number (3 digits max)",
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(3),
+                ],
                 validator: (value) {
                   final num = int.tryParse(value ?? '');
                   if (num == null || num <= 0) return "Enter a valid number";
@@ -153,3 +167,4 @@ class _ParticipantDialogState extends State<ParticipantDialog> {
     );
   }
 }
+

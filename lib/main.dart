@@ -13,6 +13,7 @@ import 'package:race_tracking_app_g5/screens/participant/participant_screen.dart
 import 'package:race_tracking_app_g5/screens/race/race_screen.dart';
 import 'package:race_tracking_app_g5/screens/segment_tracking/segment_tracking_screen.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
+import 'package:race_tracking_app_g5/view_model/dashboard_view_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,7 +59,7 @@ class _MyAppState extends State<MyApp> {
           ),
           catchError: (_, __) => null,
         ),
-        
+
         //participant providers
         ChangeNotifierProvider<ParticipantProvider>(
           create: (_) => ParticipantProvider(),
@@ -82,6 +83,16 @@ class _MyAppState extends State<MyApp> {
         StreamProvider<List<SegmentTime>>(
           create: (ctx) => ctx.read<SegmentTrackingProvider>().segmentsStream,
           initialData: [],
+        ),
+
+        //dashboard view
+        ChangeNotifierProvider(
+          create:
+              (context) => DashboardViewModel(
+                participantProvider: context.read<ParticipantProvider>(),
+                segmentTrackingProvider:
+                    context.read<SegmentTrackingProvider>(),
+              ),
         ),
       ],
       child: MaterialApp(

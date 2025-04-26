@@ -67,7 +67,14 @@ class ParticipantGridCard extends StatelessWidget {
   }) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: isEnabled ? RTColors.primary : RTColors.textSecondary,
+          width: 2,
+        ),
+      ),
       child: InkWell(
         onTap: () async {
           if (isEnabled) {
@@ -111,11 +118,10 @@ class ParticipantGridCard extends StatelessWidget {
                 name,
                 style: Theme.of(
                   context,
-                ).textTheme.bodyMedium?.copyWith(color: RTColors.textSecondary),
+                ).textTheme.bodySmall?.copyWith(color: RTColors.textSecondary),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 4),
               if (isLoading)
                 const SizedBox(
                   height: 40,

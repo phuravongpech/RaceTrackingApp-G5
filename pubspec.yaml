@@ -43,6 +43,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flutter_flip_clock: ^0.0.1
+  lucide_icons: ^0.257.0
 
 
 dev_dependencies:

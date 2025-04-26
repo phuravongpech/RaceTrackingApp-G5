@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/models/participant.dart';
@@ -100,7 +102,9 @@ class RaceScreen extends StatelessWidget {
         if (race == null) return RtButtonType.primary;
         switch (race.raceStatus) {
           case RaceStatus.notStarted:
-            return RtButtonType.primary;
+            return participants.isNotEmpty
+                ? RtButtonType.primary
+                : RtButtonType.disabled;
           case RaceStatus.started:
             return RtButtonType.secondary;
           case RaceStatus.finished:
