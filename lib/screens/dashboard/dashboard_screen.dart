@@ -6,7 +6,6 @@ import 'package:race_tracking_app_g5/screens/dashboard/widgets/race_stats_card.d
 import 'package:race_tracking_app_g5/screens/dashboard/widgets/segment_header.dart';
 import 'package:race_tracking_app_g5/screens/race/widgets/race_clock_timer.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
-import 'package:race_tracking_app_g5/utils/date_time_util.dart';
 import 'package:race_tracking_app_g5/view_model/dashboard_view_model.dart';
 
 class DashboardScreen extends StatefulWidget {

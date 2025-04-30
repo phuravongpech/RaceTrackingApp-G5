@@ -4,7 +4,7 @@ import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/models/segment_time.dart';
 import 'package:race_tracking_app_g5/screens/race/widgets/race_clock_timer.dart';
 import 'package:race_tracking_app_g5/screens/segment_tracking/widgets/participant_grid_card.dart';
-import 'package:race_tracking_app_g5/theme/theme.dart';
+import 'package:race_tracking_app_g5/screens/segment_tracking/widgets/segment_tabbar.dart';
 
 class SegmentTrackingScreen extends StatefulWidget {
   const SegmentTrackingScreen({super.key});
@@ -13,80 +13,35 @@ class SegmentTrackingScreen extends StatefulWidget {
   State<SegmentTrackingScreen> createState() => _SegmentTrackingScreenState();
 }
 
-class _SegmentTrackingScreenState extends State<SegmentTrackingScreen> {
+class _SegmentTrackingScreenState extends State<SegmentTrackingScreen>
+    with SingleTickerProviderStateMixin {
+  TabController? _tabController;
+  final List<Segment> _segments = Segment.values;
   Segment _currentSegment = Segment.swimming;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _segments.length, vsync: this);
+
+    _tabController?.addListener(() {
+      if (!(_tabController?.indexIsChanging ?? true)) {
+        setState(() {
+          _currentSegment = _segments[_tabController?.index ?? 0];
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final participants = Provider.of<List<Participant>>(context);
-
-    Widget filterDropdown = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: RTColors.backgroundAccent,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: RTColors.textSecondary.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Text(
-            'Current Segment:',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(color: RTColors.textSecondary),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<Segment>(
-                value: _currentSegment,
-                isExpanded: true,
-                icon: const Icon(Icons.arrow_drop_down),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(color: RTColors.textPrimary),
-                items:
-                    Segment.values.map((segment) {
-                      return DropdownMenuItem(
-                        value: segment,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: RTColors.backgroundAccent,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            segment.label,
-                            style: TextStyle(
-                              color: RTColors.primary,
-                              fontSize: 25,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                onChanged: (Segment? newValue) {
-                  if (newValue != null) {
-                    setState(() {
-                      _currentSegment = newValue;
-                    });
-                  }
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
 
     Widget participantCard = GridView.builder(
       shrinkWrap: true,
@@ -118,7 +73,10 @@ class _SegmentTrackingScreenState extends State<SegmentTrackingScreen> {
               children: [
                 const RaceClockLive(),
                 const SizedBox(height: 20),
-                filterDropdown,
+                SegmentTabbar(
+                  segments: _segments,
+                  tabController: _tabController!,
+                ),
                 const SizedBox(height: 20),
                 participantCard,
               ],
