@@ -114,14 +114,6 @@ class ParticipantGridCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                name,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: RTColors.textSecondary),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
               if (isLoading)
                 const SizedBox(
                   height: 40,

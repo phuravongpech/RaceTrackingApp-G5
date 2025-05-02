@@ -6,72 +6,55 @@ import 'package:race_tracking_app_g5/models/participant.dart';
 import 'package:race_tracking_app_g5/models/segment_time.dart';
 import 'package:race_tracking_app_g5/providers/participant_provider.dart';
 import 'package:race_tracking_app_g5/providers/segment_tracking_provider.dart';
+import 'package:race_tracking_app_g5/view_model/dashboard_row_builder.dart';
 
 class DashboardViewModel extends ChangeNotifier {
   final ParticipantProvider participantProvider;
   final SegmentTrackingProvider segmentTrackingProvider;
+  final DashboardRowBuilder rowBuilder;
 
-  List<Participant> participantList = [];
-  List<SegmentTime> segmentTimeList = [];
-
-  // subscription to stream to listen to updates from realtime db
-  StreamSubscription<List<Participant>>? participantSubscription;
-  StreamSubscription<List<SegmentTime>>? segmentSubscription;
-
-  //store the rows
+  List<Participant> _participantList = [];
+  List<SegmentTime> _segmentTimeList = [];
   List<DashboardRow> dashboardRows = [];
+
+  StreamSubscription<List<Participant>>? _participantSubscription;
+  StreamSubscription<List<SegmentTime>>? _segmentSubscription;
 
   DashboardViewModel({
     required this.participantProvider,
     required this.segmentTrackingProvider,
+    required this.rowBuilder,
   }) {
-    // start listening to participants
-    participantSubscription = participantProvider.stream.listen(
-      _onParticipantUpdate,
+    _participantSubscription = participantProvider.stream.listen(
+      _onParticipantsUpdated,
     );
-
-    // start listening to segment times
-    segmentSubscription = segmentTrackingProvider.segmentsStream.listen(
-      _onSegmentUpdate,
+    _segmentSubscription = segmentTrackingProvider.segmentsStream.listen(
+      _onSegmentsUpdated,
     );
   }
 
-  /// Called whenever the participant list changes.
-  void _onParticipantUpdate(List<Participant> updatedParticipants) {
-    participantList = updatedParticipants;
-    _rebuildDashboardRows();
+  void _onParticipantsUpdated(List<Participant> participants) {
+    _participantList = participants;
+    _rebuildRows();
   }
 
-  /// Called whenever the segmenttime list changes.
-  void _onSegmentUpdate(List<SegmentTime> updatedSegmentTimes) {
-    segmentTimeList = updatedSegmentTimes;
-    _rebuildDashboardRows();
+  void _onSegmentsUpdated(List<SegmentTime> segmentTimes) {
+    _segmentTimeList = segmentTimes;
+    _rebuildRows();
   }
 
-  void _rebuildDashboardRows() {
-    final Map<String, Map<Segment, SegmentTime>> participantRecord = {};
-
-    //building a map of part record in each {partId, {segment : SegmentTime}}
-    for (var record in segmentTimeList) {
-      final id = record.participantId;
-      participantRecord.putIfAbsent(id, () => {})[record.segment] = record;
-    }
-
-    //for each part, they have a dashboard row,
-    //
-    dashboardRows =
-        participantList.map((participant) {
-          final Map<Segment, SegmentTime> eachSegmentRecord =
-              participantRecord[participant.id] ?? {};
-
-          return DashboardRow(
-            participant: participant,
-            swimmingSegment: eachSegmentRecord[Segment.swimming],
-            cyclingSegment: eachSegmentRecord[Segment.cycling],
-            runningSegment: eachSegmentRecord[Segment.running],
-          );
-        }).toList();
-
+  void _rebuildRows() {
+    dashboardRows = rowBuilder.buildRows(
+      participants: _participantList,
+      segmentTimes: _segmentTimeList,
+    );
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _participantSubscription?.cancel();
+    _segmentSubscription?.cancel();
+    super.dispose();
   }
 }

@@ -13,6 +13,7 @@ import 'package:race_tracking_app_g5/screens/participant/participant_screen.dart
 import 'package:race_tracking_app_g5/screens/race/race_screen.dart';
 import 'package:race_tracking_app_g5/screens/segment_tracking/segment_tracking_screen.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
+import 'package:race_tracking_app_g5/view_model/dashboard_row_builder.dart';
 import 'package:race_tracking_app_g5/view_model/dashboard_view_model.dart';
 
 void main() async {
@@ -92,6 +93,7 @@ class _MyAppState extends State<MyApp> {
                 participantProvider: context.read<ParticipantProvider>(),
                 segmentTrackingProvider:
                     context.read<SegmentTrackingProvider>(),
+                rowBuilder: DashboardRowBuilder(),
               ),
         ),
       ],

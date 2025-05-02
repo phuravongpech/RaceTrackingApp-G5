@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 enum Segment { swimming, cycling, running }
 
 extension SegmentExtension on Segment {
@@ -9,6 +11,17 @@ extension SegmentExtension on Segment {
         return 'Cycling';
       case Segment.running:
         return 'Running';
+    }
+  }
+
+  IconData get icon{
+    switch (this) {
+      case Segment.swimming:
+        return Icons.pool_rounded;
+      case Segment.cycling:
+        return Icons.pedal_bike_rounded;
+      case Segment.running:
+        return Icons.directions_run_rounded;
     }
   }
 }

@@ -134,16 +134,6 @@ class RaceScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
-              Center(
-                child: Text(
-                  DateTime.fromMillisecondsSinceEpoch(
-                    race!.startTime,
-                  ).toString(),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.headlineSmall?.copyWith(color: RTColors.black),
-                ),
-              ),
               const SizedBox(height: 20),
               const Center(child: RaceClockLive()),
               const SizedBox(height: 20),

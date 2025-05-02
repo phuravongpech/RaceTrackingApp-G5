@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:race_tracking_app_g5/models/race.dart';
-import 'package:race_tracking_app_g5/screens/dashboard/widgets/participant_list_card.dart';
+import 'package:race_tracking_app_g5/screens/dashboard/widgets/participant_table.dart';
 import 'package:race_tracking_app_g5/screens/dashboard/widgets/race_stats_card.dart';
-import 'package:race_tracking_app_g5/screens/dashboard/widgets/segment_header.dart';
 import 'package:race_tracking_app_g5/screens/race/widgets/race_clock_timer.dart';
 import 'package:race_tracking_app_g5/theme/theme.dart';
 import 'package:race_tracking_app_g5/view_model/dashboard_view_model.dart';
@@ -49,18 +48,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           if (_showClock) const RaceClockLive(),
           SizedBox(height: 12),
-          RaceStatsCard(context, rows: rows, race: race),
-          SegmentHeader(),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 16),
-              itemCount: rows.length,
-              itemBuilder: (_, index) {
-                final row = rows[index];
-                return ParticipantListCard(row: row, index: index);
-              },
-            ),
-          ),
+          RaceStatsCard(rows: rows, race: race),
+          Expanded(child: ParticipantTable(rows: rows)),
         ],
       ),
     );
