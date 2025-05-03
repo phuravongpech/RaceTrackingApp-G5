@@ -34,4 +34,33 @@ class SegmentTrackingProvider extends ChangeNotifier {
   Future<void> clearAllSegments() async {
     await _ref.remove();
   }
+
+  /// Removes the last recorded segment time for a specific participant.
+  /// It fetches all segment times, filters them by the given participant ID,
+  /// sorts them in descending order of elapsed time, and removes the most recent one.
+  Future<void> undoLastSegment(String participantId) async {
+    final snapshot = await _ref.get();
+
+    if (snapshot.exists) {
+      final data = Map<String, dynamic>.from(snapshot.value as Map);
+      final entries =
+          data.entries
+              .map(
+                (e) => MapEntry(
+                  e.key,
+                  SegmentTime.fromMap(Map<String, dynamic>.from(e.value)),
+                ),
+              )
+              .where((entry) => entry.value.participantId == participantId)
+              .toList();
+      if (entries.isEmpty) return;
+      entries.sort(
+        (a, b) => b.value.elapsedTimeInSeconds.compareTo(
+          a.value.elapsedTimeInSeconds,
+        ),
+      );
+
+      await _ref.child(entries.first.key).remove();
+    }
+  }
 }

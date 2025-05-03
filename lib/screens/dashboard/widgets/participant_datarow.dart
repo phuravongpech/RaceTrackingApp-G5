@@ -14,7 +14,6 @@ class ParticipantDatarow extends StatelessWidget {
   final bool isEven;
   @override
   Widget build(BuildContext context) {
-    debugPrint('ParticipantTable build with ${row.participant.name} rows');
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
@@ -42,7 +41,7 @@ class ParticipantDatarow extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            flex: 4,
+            flex: 3,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -130,16 +129,34 @@ Widget _buildTimeSegment(int? time, Color color) {
   );
 }
 
-Color _getStatusColor(DashboardRow row) {
-  if (row.runningSegment != null) return RTColors.tertiary;
-  if (row.cyclingSegment != null) return RTColors.secondary;
-  if (row.swimmingSegment != null) return RTColors.primary;
-  return RTColors.warning;
+String _getStatusText(DashboardRow row) {
+  final hasAllSegments = row.swimmingSegment != null &&
+      row.cyclingSegment != null &&
+      row.runningSegment != null;
+
+  if (hasAllSegments) return 'Finished';
+  if (row.runningSegment?.elapsedTimeInSeconds != null) {
+      return 'Running';
+    } else if (row.cyclingSegment?.elapsedTimeInSeconds != null) {
+      return 'Cycling';
+    } else if (row.swimmingSegment?.elapsedTimeInSeconds != null) {
+      return 'Swimming';
+    }
+  return 'In Progress';
 }
 
-String _getStatusText(DashboardRow row) {
-  if (row.runningSegment != null) return 'Running';
-  if (row.cyclingSegment != null) return 'Cycling';
-  if (row.swimmingSegment != null) return 'Swimming';
-  return 'In Progress';
+Color _getStatusColor(DashboardRow row) {
+  final hasAllSegments = row.swimmingSegment != null &&
+      row.cyclingSegment != null &&
+      row.runningSegment != null;
+
+  if (hasAllSegments) return RTColors.success;
+  if (row.runningSegment?.elapsedTimeInSeconds != null) {
+      return RTColors.tertiary; // Running segment
+    } else if (row.cyclingSegment?.elapsedTimeInSeconds != null) {
+      return RTColors.secondary; // Cycling segment
+    } else if (row.swimmingSegment?.elapsedTimeInSeconds != null) {
+      return RTColors.primary; // Swimming segment
+    }
+    return RTColors.warning; // Not started
 }

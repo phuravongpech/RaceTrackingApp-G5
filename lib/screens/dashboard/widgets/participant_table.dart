@@ -9,7 +9,6 @@ class ParticipantTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('ParticipantTable build with ${rows.length} rows');
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(

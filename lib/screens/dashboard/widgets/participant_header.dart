@@ -26,7 +26,7 @@ class ParticipantTableHeader extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            flex: 4,
+            flex: 3,
             child: Text(
               'Participant',
               style: RTTextStyles.label.copyWith(fontWeight: FontWeight.bold),
